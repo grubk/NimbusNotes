@@ -1,0 +1,88 @@
+.wrapper {
+  position: relative;
+  text-decoration: none;
+  transition: all 200ms ease;
+  display: inline-block;
+  cursor: pointer;
+
+  transform: scale(0.8);
+  transform-origin: top center;
+}
+
+
+.inside {
+  position: relative;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.button {
+  border: transparent;
+  display: block;
+  transition: ease-in 200ms ease;
+  position: relative;
+  margin: 3px;
+  width: 208px;  /* Adjust size to keep aspect ratio */
+  height: 278px;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  cursor: pointer;
+  z-index: 2;
+  outline: 1px solid #4285F4;
+}
+
+.wrapper:hover {
+  transform: scale(0.82);
+}
+
+
+.wrapper:hover::after {
+  opacity: 1;
+}
+
+@keyframes MyRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  33% {
+    transform: rotate(120deg);
+  }
+
+  66% {
+    transform: rotate(210deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.shiny {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+  filter: blur(5px);
+  position: absolute;
+  inset: 50% -70% -70% 50%;
+  background: linear-gradient(
+    to left,
+    transparent,
+    #4285F4,
+    #FFF,
+    transparent 100%
+  );
+  border-radius: 6px;
+  transition: all 300ms ease;
+  background-repeat: no-repeat;
+  transform-origin: 0 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wrapper:hover .shiny {
+  opacity: 1;
+  background-size: 100% 100%;
+  animation: MyRotate 1.5s infinite linear;
+}
