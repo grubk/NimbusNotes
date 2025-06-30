@@ -1,3 +1,16 @@
+Site accessible at: https://nimbus-notes-seven.vercel.app/welcome
+
+Current features:
+- Realtime updates/sync with database
+- Live collaboration with other users through "organizations" feature
+- Basic formatting you would expect in any text editor
+- "Code Blocks" with syntax highlighting (should detect most languages automatically and adjust accordingly)
+
+Users may (definitely will at this point in time) experience issues if you don't use firefox, since this very early version was tested on firefox.
+
+
+**NextJS Standard ReadMe below**
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
