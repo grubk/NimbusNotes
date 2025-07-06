@@ -1,6 +1,7 @@
 import { Extension } from '@tiptap/core'
 import { Plugin, PluginKey, EditorState, Transaction } from 'prosemirror-state'
 import { Decoration, DecorationSet } from 'prosemirror-view'
+import { Node } from 'prosemirror-model'
 
 export const clamp = (val: number, min: number, max: number): number => {
   if (val < min) return min
@@ -15,34 +16,50 @@ interface IndentOptions {
 }
 
 const indentPluginKey = new PluginKey<{
-  lineIndents: Map<number, number>
   decorations: DecorationSet
 }>('indent')
 
-// Helper function to get the start position of a line
-const getLineStart = (state: EditorState, pos: number): number => {
+// Helper function to get the line number within a node
+const getLineNumber = (state: EditorState, pos: number): { nodePos: number, lineIndex: number } => {
   const $pos = state.doc.resolve(pos)
-  let lineStart = $pos.start($pos.depth)
-
-  // Walk backwards to find the actual start of the text line
   const node = $pos.parent
-  const nodeStart = $pos.start($pos.depth)
-
-  for (let i = $pos.parentOffset - 1; i >= 0; i--) {
-    const char = node.textContent[i]
-    if (char === '\n') {
-      lineStart = nodeStart + i + 1
-      break
+  
+  // Count newlines from node start to current position
+  let lineIndex = 0
+  const textToPos = node.textContent.slice(0, $pos.parentOffset)
+  
+  for (let i = 0; i < textToPos.length; i++) {
+    if (textToPos[i] === '\n') {
+      lineIndex++
     }
   }
+  
+  // Safety check: if we're at the top level (depth 0), use position 0
+  const nodePos = $pos.depth > 0 ? $pos.before($pos.depth) : 0
+  
+  return { nodePos, lineIndex }
+}
 
-  return lineStart
+// Helper function to get line start position within a node
+const getLineStartInNode = (node: Node, lineIndex: number): number => {
+  if (lineIndex === 0) return 0
+  
+  let currentLine = 0
+  for (let i = 0; i < node.textContent.length; i++) {
+    if (node.textContent[i] === '\n') {
+      currentLine++
+      if (currentLine === lineIndex) {
+        return i + 1
+      }
+    }
+  }
+  return node.textContent.length
 }
 
 // Helper function to create indentation decoration
-const createIndentDecoration = (pos: number, level: number) => {
+const createIndentDecoration = (nodeStart: number, lineOffset: number, level: number) => {
   return Decoration.widget(
-    pos,
+    nodeStart + lineOffset,
     () => {
       const span = document.createElement('span')
       span.style.marginLeft = `${level * 2}rem`
@@ -68,10 +85,25 @@ export const Indent = Extension.create<IndentOptions>({
 
   addOptions() {
     return {
-      types: ['paragraph', 'heading'],
+      types: ['paragraph', 'heading', 'codeBlock'],
       indentStep: 1,
       maxIndent: 8,
     }
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          lineIndents: {
+            default: {},
+            renderHTML: () => ({}),
+            parseHTML: () => ({}),
+          },
+        },
+      },
+    ]
   },
 
   addCommands() {
@@ -82,12 +114,13 @@ export const Indent = Extension.create<IndentOptions>({
         dispatch?: (tr: Transaction) => void
       }) => {
         const { selection } = state
-        const lineStart = getLineStart(state, selection.from)
-
-        const plugin = indentPluginKey.getState(state)
-        if (!plugin) return false
-
-        const currentIndent = plugin.lineIndents.get(lineStart) || 0
+        const { nodePos, lineIndex } = getLineNumber(state, selection.from)
+        
+        const $pos = state.doc.resolve(selection.from)
+        const node = $pos.parent
+        const currentLineIndents = node.attrs.lineIndents || {}
+        const currentIndent = currentLineIndents[lineIndex] || 0
+        
         const newIndent = clamp(
           currentIndent + this.options.indentStep,
           0,
@@ -97,22 +130,9 @@ export const Indent = Extension.create<IndentOptions>({
         if (newIndent === currentIndent) return false
 
         if (dispatch) {
-          const newLineIndents = new Map(plugin.lineIndents)
-          newLineIndents.set(lineStart, newIndent)
-
-          // Update decorations
-          const decorations = plugin.decorations.remove(
-            plugin.decorations.find(lineStart, lineStart)
-          )
-          const newDecorations =
-            newIndent > 0
-              ? decorations.add(tr.doc, [createIndentDecoration(lineStart, newIndent)])
-              : decorations
-
-          tr.setMeta(indentPluginKey, {
-            lineIndents: newLineIndents,
-            decorations: newDecorations,
-          })
+          const updatedLineIndents = { ...currentLineIndents, [lineIndex]: newIndent }
+          
+          tr.setNodeMarkup(nodePos, node.type, { ...node.attrs, lineIndents: updatedLineIndents }, node.marks)
         }
 
         return true
@@ -124,12 +144,13 @@ export const Indent = Extension.create<IndentOptions>({
         dispatch?: (tr: Transaction) => void
       }) => {
         const { selection } = state
-        const lineStart = getLineStart(state, selection.from)
-
-        const plugin = indentPluginKey.getState(state)
-        if (!plugin) return false
-
-        const currentIndent = plugin.lineIndents.get(lineStart) || 0
+        const { nodePos, lineIndex } = getLineNumber(state, selection.from)
+        
+        const $pos = state.doc.resolve(selection.from)
+        const node = $pos.parent
+        const currentLineIndents = node.attrs.lineIndents || {}
+        const currentIndent = currentLineIndents[lineIndex] || 0
+        
         if (currentIndent === 0) return false
 
         const newIndent = clamp(
@@ -139,26 +160,15 @@ export const Indent = Extension.create<IndentOptions>({
         )
 
         if (dispatch) {
-          const newLineIndents = new Map(plugin.lineIndents)
+          const updatedLineIndents = { ...currentLineIndents }
+          
           if (newIndent === 0) {
-            newLineIndents.delete(lineStart)
+            delete updatedLineIndents[lineIndex]
           } else {
-            newLineIndents.set(lineStart, newIndent)
+            updatedLineIndents[lineIndex] = newIndent
           }
-
-          // Update decorations
-          const decorations = plugin.decorations.remove(
-            plugin.decorations.find(lineStart, lineStart)
-          )
-          const newDecorations =
-            newIndent > 0
-              ? decorations.add(tr.doc, [createIndentDecoration(lineStart, newIndent)])
-              : decorations
-
-          tr.setMeta(indentPluginKey, {
-            lineIndents: newLineIndents,
-            decorations: newDecorations,
-          })
+          
+          tr.setNodeMarkup(nodePos, node.type, { ...node.attrs, lineIndents: updatedLineIndents }, node.marks)
         }
 
         return true
@@ -170,7 +180,10 @@ export const Indent = Extension.create<IndentOptions>({
     const isAtLineStart = (): boolean => {
       const { state } = this.editor
       const { selection } = state
-      const lineStart = getLineStart(state, selection.from)
+      const { lineIndex } = getLineNumber(state, selection.from)
+      const $pos = state.doc.resolve(selection.from)
+      const node = $pos.parent
+      const lineStart = $pos.start($pos.depth) + getLineStartInNode(node, lineIndex)
       return selection.from === lineStart
     }
 
@@ -185,9 +198,11 @@ export const Indent = Extension.create<IndentOptions>({
     const hasLineIndent = (): boolean => {
       const { state } = this.editor
       const { selection } = state
-      const lineStart = getLineStart(state, selection.from)
-      const plugin = indentPluginKey.getState(state)
-      return plugin ? (plugin.lineIndents.get(lineStart) || 0) > 0 : false
+      const { lineIndex } = getLineNumber(state, selection.from)
+      const $pos = state.doc.resolve(selection.from)
+      const node = $pos.parent
+      const lineIndents = node.attrs.lineIndents || {}
+      return (lineIndents[lineIndex] || 0) > 0
     }
 
     return {
@@ -235,45 +250,87 @@ export const Indent = Extension.create<IndentOptions>({
 
         return false
       },
+
+      // IMPORTANT: Preserve logic that removes indent when entering new line
+      Enter: () => {
+        const { state } = this.editor
+        const { selection } = state
+        const { lineIndex } = getLineNumber(state, selection.from)
+        const $pos = state.doc.resolve(selection.from)
+        const node = $pos.parent
+        const lineIndents = node.attrs.lineIndents || {}
+        
+        // If current line has indent, remove it after Enter
+        if (lineIndents[lineIndex]) {
+          // Let the default Enter behavior happen first, then remove indent
+          setTimeout(() => {
+            const newState = this.editor.state
+            const newSelection = newState.selection
+            const newLineInfo = getLineNumber(newState, newSelection.from)
+            const newPos = newState.doc.resolve(newSelection.from)
+            const newNode = newPos.parent
+            const newLineIndents = newNode.attrs.lineIndents || {}
+            
+            if (newLineIndents[newLineInfo.lineIndex]) {
+              const updatedLineIndents = { ...newLineIndents }
+              delete updatedLineIndents[newLineInfo.lineIndex]
+              
+              const tr = newState.tr
+              tr.setNodeMarkup(newLineInfo.nodePos, newNode.type, { ...newNode.attrs, lineIndents: updatedLineIndents }, newNode.marks)
+              this.editor.view.dispatch(tr)
+            }
+          }, 0)
+        }
+        
+        return false // Let default Enter behavior proceed
+      },
     }
   },
 
   addProseMirrorPlugins() {
+    const options = this.options
+    
     return [
       new Plugin({
         key: indentPluginKey,
         state: {
-          init() {
+          init(config, state) {
+            // Create decorations from node attributes
+            const decorations: Decoration[] = []
+            
+            state.doc.descendants((node, pos) => {
+              if (options.types.includes(node.type.name) && node.attrs.lineIndents) {
+                Object.entries(node.attrs.lineIndents).forEach(([lineIndex, level]) => {
+                  const lineOffset = getLineStartInNode(node, parseInt(lineIndex))
+                  decorations.push(createIndentDecoration(pos + 1, lineOffset, level as number))
+                })
+              }
+            })
+
             return {
-              lineIndents: new Map<number, number>(),
-              decorations: DecorationSet.empty,
+              decorations: DecorationSet.create(state.doc, decorations),
             }
           },
           apply(tr, pluginState) {
-            const { lineIndents, decorations } = pluginState
+            // Recreate decorations on any document change
+            if (tr.docChanged) {
+              const decorations: Decoration[] = []
+              
+              tr.doc.descendants((node, pos) => {
+                if (options.types.includes(node.type.name) && node.attrs.lineIndents) {
+                  Object.entries(node.attrs.lineIndents).forEach(([lineIndex, level]) => {
+                    const lineOffset = getLineStartInNode(node, parseInt(lineIndex))
+                    decorations.push(createIndentDecoration(pos + 1, lineOffset, level as number))
+                  })
+                }
+              })
 
-            // Check if we have meta updates
-            const meta = tr.getMeta(indentPluginKey)
-            if (meta) {
-              return meta
-            }
-
-            // Map decorations through document changes
-            const newDecorations = decorations.map(tr.mapping, tr.doc)
-
-            // Update line positions due to document changes
-            const newLineIndents = new Map<number, number>()
-            for (const [pos, level] of lineIndents) {
-              const newPos = tr.mapping.map(pos)
-              if (newPos !== null) {
-                newLineIndents.set(newPos, level)
+              return {
+                decorations: DecorationSet.create(tr.doc, decorations),
               }
             }
 
-            return {
-              lineIndents: newLineIndents,
-              decorations: newDecorations,
-            }
+            return pluginState
           },
         },
         props: {
