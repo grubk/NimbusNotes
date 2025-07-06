@@ -159,7 +159,7 @@ export const Navbar = ({ data }: NavbarProps) => {
                 <Menubar className="border-none bg-transparent shadow-none h-auto p-0">
                 {/* === FILE MENU === */}
                 <MenubarMenu>
-                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted/40 h-auto">
                     File
                     </MenubarTrigger>
                     <MenubarContent className="print:hidden max-h-72 overflow-auto min-w-[200px]">
@@ -220,7 +220,7 @@ export const Navbar = ({ data }: NavbarProps) => {
 
                 {/* === EDIT MENU === */}
                 <MenubarMenu>
-                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted/40 h-auto">
                     Edit
                     </MenubarTrigger>
                     <MenubarContent>
@@ -237,7 +237,7 @@ export const Navbar = ({ data }: NavbarProps) => {
 
                 {/* === INSERT MENU === */}
                 <MenubarMenu>
-                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted/40 h-auto">
                     Insert
                     </MenubarTrigger>
                     <MenubarContent>
@@ -256,7 +256,7 @@ export const Navbar = ({ data }: NavbarProps) => {
 
                 {/* === FORMAT MENU === */}
                 <MenubarMenu>
-                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted h-auto">
+                    <MenubarTrigger className="text-sm font-normal py-0.5 px-[7px] rounded-sm hover:bg-muted/40 h-auto">
                     Format
                     </MenubarTrigger>
                     <MenubarContent>
