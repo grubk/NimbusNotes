@@ -256,7 +256,29 @@ body {
       color: inherit;
       font-size: 0.8rem;
       padding: 0;
-      -webkit-user-modify: read-only;
+      white-space: pre;
+      font-family: 'JetBrainsMono', 'Courier New', monospace;
+      -webkit-user-modify: read-write;
+      user-select: text;
+      outline: none;
+      border: none;
+    }
+
+    /* Ensure code blocks are editable in all browsers */
+    &[contenteditable="true"] code {
+      -webkit-user-modify: read-write-plaintext-only;
+      -moz-user-modify: read-write;
+      user-modify: read-write;
+    }
+
+    /* Fix for Chromium browsers */
+    &:focus-within {
+      outline: none;
+    }
+
+    code:focus {
+      outline: none;
+      background: none;
     }
 
     /* Code block styling */
@@ -381,6 +403,39 @@ body {
       outline: 3px solid var(--selected);
     }
   }
+
+  /* Resizable image specific styling */
+  .tiptap-resizable-image {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .tiptap-resizable-image img {
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  /* Ensure resize handles don't cause overflow */
+  .tiptap-resizable-image-container {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* Dynamic max-width constraint based on editor margins */
+  .tiptap-resizable-image-constrained {
+    max-width: calc(816px - var(--left-margin, 56px) - var(--right-margin, 56px)) !important;
+  }
+
+  /* Indentation styles for tt-indent extension */
+  .tt-indent-1 { margin-left: 2rem; }
+  .tt-indent-2 { margin-left: 4rem; }
+  .tt-indent-3 { margin-left: 6rem; }
+  .tt-indent-4 { margin-left: 8rem; }
+  .tt-indent-5 { margin-left: 10rem; }
+  .tt-indent-6 { margin-left: 12rem; }
+  .tt-indent-7 { margin-left: 14rem; }
+  .tt-indent-8 { margin-left: 16rem; }
 }
 
 /* Highlight colour */
