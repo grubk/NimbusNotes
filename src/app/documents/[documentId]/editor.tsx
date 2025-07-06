@@ -21,7 +21,6 @@ import TextAlign from '@tiptap/extension-text-align'
 import { LineHeightExtension } from '@/extensions/line-height'
 import { Indent } from '@/extensions/indent'
 import StarterKit from '@tiptap/starter-kit'
-
 import { useEditorStore } from '@/store/use-editor-store'
 import { Ruler } from './ruler';
 import { useLiveblocksExtension } from "@liveblocks/react-tiptap"
