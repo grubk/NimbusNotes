@@ -30,7 +30,7 @@ import { useStorage } from '@liveblocks/react';
 // initialize languages in lowlight
 const lowlight = createLowlight(all)
 
-//disable spellcheck in code blocks
+//disable spellcheck in code blocks and fix browser compatibility
 export const noSpellcheckCodeBlockLowlight = CodeBlockLowlight.extend({
   addAttributes() {
     return {
@@ -40,16 +40,53 @@ export const noSpellcheckCodeBlockLowlight = CodeBlockLowlight.extend({
         renderHTML: () => {
           return {
             spellcheck: 'false',
+            contenteditable: 'true',
           }
         },
+        parseHTML: () => false,
       },
     }
   },
+  
+  addNodeView() {
+    return ({ node }) => {
+      const dom = document.createElement('pre')
+      const contentDOM = document.createElement('code')
+      
+      // Set attributes for better browser compatibility
+      dom.setAttribute('spellcheck', 'false')
+      dom.setAttribute('data-language', node.attrs.language || 'null')
+      contentDOM.setAttribute('spellcheck', 'false')
+      contentDOM.setAttribute('contenteditable', 'true')
+      
+      // Prevent browser auto-formatting
+      contentDOM.style.whiteSpace = 'pre'
+      contentDOM.style.fontFamily = 'monospace'
+      
+      dom.appendChild(contentDOM)
+      
+      return {
+        dom,
+        contentDOM,
+        update: (updatedNode) => {
+          if (updatedNode.type !== node.type) return false
+          if (updatedNode.attrs.language !== node.attrs.language) {
+            dom.setAttribute('data-language', updatedNode.attrs.language || 'null')
+          }
+          return true
+        }
+      }
+    }
+  }
 })
 
 const CustomCodeBlockLowlight = noSpellcheckCodeBlockLowlight.configure({
   lowlight,
-  exitOnTripleEnter: false
+  exitOnTripleEnter: false,
+  HTMLAttributes: {
+    spellcheck: 'false',
+    class: 'hljs'
+  }
 })
 
 
@@ -61,6 +98,9 @@ export const Editor = () => {
     const liveblocks = useLiveblocksExtension({
       offlineSupport_experimental: true
     })
+
+    // Calculate max width for images based on margins
+    const imageMaxWidth = 816 - (leftMargin ?? 56) - (rightMargin ?? 56)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -87,7 +127,7 @@ export const Editor = () => {
     },
     editorProps: {
         attributes: {
-            style: `padding-left: ${leftMargin ?? 56}px; padding-right: ${rightMargin ?? 56}px;`,
+            style: `padding-left: ${leftMargin ?? 56}px; padding-right: ${rightMargin ?? 56}px; --left-margin: ${leftMargin ?? 56}px; --right-margin: ${rightMargin ?? 56}px;`,
             class: "focus:outline-none print:border-0 bg-white border border-[#C7C7C7] flex flex-col min-h-[1054px] w-[816px] pt-10 pr-14 pb-10 cursor-text"
         },
     },
@@ -130,16 +170,16 @@ export const Editor = () => {
         TableHeader,
         TableRow,
         ResizableImage.configure({
-        defaultWidth: 400,
+        defaultWidth: Math.min(400, imageMaxWidth),
         defaultHeight: 400,
+        maxWidth: imageMaxWidth, // Constrain to available width between margins
+        allowBase64: true,
       }),
 
     ],
   content: ``,
-
-
-      
   })
+
     return (
       <div className="size-full overflow-x-auto bg-[#F9FBFD] z-0 px-4 mt-4 print:p-0 print:bg-white print:overflow-visible">
         <Ruler />
