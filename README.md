@@ -1,4 +1,4 @@
-# ✨ Nimbus Notes  
+# ☁️ Nimbus Notes  
 **Accessible [here](https://nimbus-notes-seven.vercel.app/welcome)**
 
 A real-time collaborative note-taking app with modern UI/UX, organization-based sharing, and smart formatting features. Perfect for STEM students.
