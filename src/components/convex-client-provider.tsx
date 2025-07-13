@@ -14,7 +14,7 @@ export function ConvexClientProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   //Exclude auth on welcome page
-  const isPublicPage = pathname === "/welcome" || pathname === "/";
+  const isPublicPage = pathname === "/welcome" || pathname === "/" || pathname === "/mobile-error";
 
   return (
     <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
