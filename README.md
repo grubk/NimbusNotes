@@ -3,6 +3,8 @@
 
 A real-time collaborative note-taking app with modern UI/UX, organization-based sharing, and smart formatting features. Perfect for STEM students.
 
+Nimbus Notes is currently not supported on mobile devices.
+
 ---
 
 ## 🚀 Features
