@@ -24,8 +24,8 @@ Nimbus Notes is currently not supported on mobile devices.
 ---
 
 ## 🧰 Tech Stack
-- ⚡ **Next.js** – Fullstack React framework  
-- 🎯 **TipTap Editor** – Powerful rich-text editor  
-- 💅 **Tailwind CSS** – Utility-first styling  
+- ⚡ **Next.js**
+- ⚛️ **React**
+- 💅 **Tailwind CSS**
 - 🔗 **Convex** – Reactive serverless database  
-- 🌐 **Liveblocks** – Real-time multiplayer collaboration
+- 🌐 **Liveblocks** – Real-time collaboration
