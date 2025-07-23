@@ -515,3 +515,9 @@ body {
 
 }
 
+/*Table resizing */
+.ProseMirror .column-resize-handle {
+  background-color: #3b82f6 !important;
+}
+
+
