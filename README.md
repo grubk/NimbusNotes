@@ -19,8 +19,6 @@ Nimbus Notes is currently not supported on mobile devices.
 ### 🛠️ Upcoming
 - ➡️ **Natural language to LaTeX converter**  
   > _e.g._ "Integral from 0 to 2 of x^2" → `\int_0^2 x^2 \, dx`
-- 📊 **Smarter table editing** with drag & resize support
-
 ---
 
 ## 🧰 Tech Stack
