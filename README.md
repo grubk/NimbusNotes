@@ -3,6 +3,8 @@
 
 A real-time collaborative note-taking app with modern UI/UX, organization-based sharing, and smart formatting features. Perfect for STEM students.
 
+Nimbus Notes is currently not supported on mobile devices.
+
 ---
 
 ## 🚀 Features
@@ -22,8 +24,8 @@ A real-time collaborative note-taking app with modern UI/UX, organization-based 
 ---
 
 ## 🧰 Tech Stack
-- ⚡ **Next.js** – Fullstack React framework  
-- 🎯 **TipTap Editor** – Powerful rich-text editor  
-- 💅 **Tailwind CSS** – Utility-first styling  
+- ⚡ **Next.js**
+- ⚛️ **React**
+- 💅 **Tailwind CSS**
 - 🔗 **Convex** – Reactive serverless database  
-- 🌐 **Liveblocks** – Real-time multiplayer collaboration
+- 🌐 **Liveblocks** – Real-time collaboration
