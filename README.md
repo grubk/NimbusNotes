@@ -20,7 +20,13 @@ Nimbus Notes is currently not supported on mobile devices.
 - ➡️ **Natural language to LaTeX converter**  
   > _e.g._ "Integral from 0 to 2 of x^2" → `\int_0^2 x^2 \, dx`
 ---
+### 🖼️Demos/Screenshots
+<img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203755.png" width="1200" />
+<img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203815.png" width="1200" />
+<img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203730.png" width="1200" />
+<img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203702.png" width="1200" />
 
+---
 ## 🧰 Tech Stack
 - ⚡ **Next.js**
 - ⚛️ **React**
