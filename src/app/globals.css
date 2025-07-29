@@ -520,4 +520,28 @@ body {
   background-color: #3b82f6 !important;
 }
 
+/*Print styles */
+@page {
+  margin: 0;
+  size: A4;
+}
+
+@media print {
+  /* Hide browser headers/footers */
+  @page {
+    margin: 0;
+  }
+  
+  /* Ensure your content fills the page properly */
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Hide any elements that shouldn't print */
+  .print\\:hidden {
+    display: none !important;
+  }
+}
+
 
