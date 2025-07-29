@@ -1,6 +1,6 @@
 import { BsCloudCheck, BsCloudSlash } from "react-icons/bs"
 import { Id } from "../../../../convex/_generated/dataModel"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { useMutation } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import { useDebounce } from "@/hooks/use-debounce"
@@ -22,6 +22,11 @@ export const DocumentInput = ({ title, id}: DocumentInputProps) => {
 
     const inputRef = useRef<HTMLInputElement>(null)
     const mutate = useMutation(api.documents.updateById)
+
+    // Sync internal state with title prop when it changes externally
+    useEffect(() => {
+        setValue(title)
+    }, [title])
 
     const debouncedUpdate = useDebounce((newValue: string) => {
         if (newValue === title) return
