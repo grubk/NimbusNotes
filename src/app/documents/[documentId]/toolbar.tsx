@@ -396,7 +396,7 @@ const HighlightColorButton = () => {
 
 const TextColorButton = () => {
     const {editor} = useEditorStore();
-    const value = editor?.getAttributes("testStyle").color || "#000000"
+    const value = editor?.getAttributes("textStyle").color || "#000000"
     const onChange = (color:ColorResult) => {
         editor?.chain().focus().setColor(color.hex).run()
     }
@@ -411,11 +411,13 @@ const TextColorButton = () => {
                     <div className="h-0.5 w-full" style={{ backgroundColor: value }} />
                 </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="p-0">
-                <SwatchesPicker
-                    color={value}
-                    onChange={onChange}
-                />
+            <DropdownMenuContent className="p-0 overflow-hidden">
+                <div className="overflow-hidden">
+                    <SwatchesPicker
+                        color={value}
+                        onChange={onChange}
+                    />
+                </div>
             </DropdownMenuContent>
         </DropdownMenu>
     )
