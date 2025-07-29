@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent layout shift when dropdowns/modals hide scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
+  /* Prevent layout shift when scrollbar disappears in Chromium browsers */
+  scrollbar-gutter: stable;
+}
+
+/* Additional fix for when body overflow is set to hidden by modals */
+body[style*="overflow: hidden"] {
+  padding-right: var(--scrollbar-width, 0px);
 }
 
 @layer base {
