@@ -22,6 +22,7 @@ Nimbus Notes is currently not supported on mobile devices.
 - ~~**Fix exporting  to .pdf, .docx formats**~~ ✅
 - **Mobile support**
 - **Comments**
+- **Version History**
 ---
 ### Demos/Screenshots
 <img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203755.png" width="1200" />
