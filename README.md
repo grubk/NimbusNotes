@@ -23,7 +23,7 @@ Nimbus Notes is currently not supported on mobile devices.
 - **Mobile support**
 - **Comments**
 - **Version History**
-- **AI Explanation**
+- **AI Explanation - Highlight text, formulas, etc. and press a button to get an AI explanation.**
 ---
 ### Demos/Screenshots
 <img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203755.png" width="1200" />
