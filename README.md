@@ -23,6 +23,7 @@ Nimbus Notes is currently not supported on mobile devices.
 - **Mobile support**
 - **Comments**
 - **Version History**
+- **AI Explanation**
 ---
 ### Demos/Screenshots
 <img src="https://github.com/grubk/NimbusNotes/blob/main/demos/Screenshot 2025-07-22 203755.png" width="1200" />
